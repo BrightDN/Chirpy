@@ -1,0 +1,24 @@
+# http
+### valid
+POST http://localhost:8080/api/validate_chirp
+Content-Type: application/json
+
+{
+  "body": "hello"
+}
+
+# http
+### too long
+POST http://localhost:8080/api/validate_chirp
+Content-Type: application/json
+
+{
+  "body": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+
+# http
+### malformed json
+POST http://localhost:8080/api/validate_chirp
+Content-Type: application/json
+
+{ "body": 123 }

@@ -1,33 +1,32 @@
 package main
 
 import (
-	"net/http"
 	"log"
+	"net/http"
 )
 
-
-func main(){
+func main() {
 	const filepathRoot = "."
 	const port = "8080"
 
+	apiCfg := apiConfig{}
+
 	mu := http.NewServeMux()
 	fileServer := http.FileServer(http.Dir(filepathRoot))
+	handler := http.StripPrefix("/app", fileServer)
 
-	mu.Handle("/app/", http.StripPrefix("/app", fileServer))
-	mu.HandleFunc("/healthz", endpointReadiness)
+	mu.Handle("/app/", apiCfg.middlewareMetricsInc(handler))
+	mu.HandleFunc("GET /admin/healthz", endpointReadiness)
+
+	mu.HandleFunc("GET /admin/metrics", apiCfg.endpointMetrics)
+	mu.HandleFunc("POST /admin/reset", apiCfg.endpointReset)
+	mu.HandleFunc("POST /api/validate_chirp", apiCfg.endpointValidateChirp)
 
 	server := http.Server{
-		Addr: ":" + port,
+		Addr:    ":" + port,
 		Handler: mu,
 	}
 
 	log.Printf("Serving files from %s on port: %s\n", filepathRoot, port)
 	log.Fatal(server.ListenAndServe())
-}
-
-
-func endpointReadiness(w http.ResponseWriter, r *http.Request){
-	w.Header().Add("Content-Type", "text/plain; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(http.StatusText(http.StatusOK)))
 }
