@@ -13,7 +13,7 @@ func (cfg *apiConfig) endpointValidateChirp(w http.ResponseWriter, r *http.Reque
 
 	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		resp := jsonResp{Error: "Something went wrong"}
+		resp := apiError{Error: "Something went wrong"}
 		data, _ := json.Marshal(resp)
 		w.WriteHeader(400)
 		w.Write(data)
@@ -22,7 +22,7 @@ func (cfg *apiConfig) endpointValidateChirp(w http.ResponseWriter, r *http.Reque
 
 	if len(params.Body) > 140 {
 		w.Header().Set("Content-Type", "application/json")
-		resp := jsonResp{Error: "Chirp is too long"}
+		resp := apiError{Error: "Chirp is too long"}
 		data, _ := json.Marshal(resp)
 		w.WriteHeader(400)
 		w.Write(data)
@@ -32,7 +32,7 @@ func (cfg *apiConfig) endpointValidateChirp(w http.ResponseWriter, r *http.Reque
 	cleaned := ReplaceProfanity(params.Body)
 
 	w.Header().Set("Content-Type", "application/json")
-	resp := jsonResp{Cleaned_Body: cleaned}
+	resp := chirpValidateResp{Cleaned_Body: cleaned}
 	data, _ := json.Marshal(resp)
 	w.WriteHeader(200)
 	w.Write(data)

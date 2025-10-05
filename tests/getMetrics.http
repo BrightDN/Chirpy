@@ -1,0 +1,4 @@
+# http
+### get metrics
+GET http://localhost:8080/admin/metrics
+Content-Type: application/json
