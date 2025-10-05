@@ -18,6 +18,6 @@ func (cfg *apiConfig) endpointReset(w http.ResponseWriter, r *http.Request) {
 
 	cfg.fileserverHits.Store(0)
 
-	w.WriteHeader(http.StatusNoContent)
+	w.WriteHeader(http.StatusOK)
 
 }

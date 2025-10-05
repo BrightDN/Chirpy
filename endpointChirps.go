@@ -5,10 +5,12 @@ import (
 	"net/http"
 	"slices"
 	"strings"
+
+	"github.com/BrightDN/Chirpy/internal/database"
+	"github.com/google/uuid"
 )
 
-func (cfg *apiConfig) endpointValidateChirp(w http.ResponseWriter, r *http.Request) {
-
+func (cfg *apiConfig) endpointCreateChirp(w http.ResponseWriter, r *http.Request) {
 	var params params
 
 	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
@@ -23,7 +25,24 @@ func (cfg *apiConfig) endpointValidateChirp(w http.ResponseWriter, r *http.Reque
 
 	cleaned := ReplaceProfanity(params.Body)
 
-	writeJSON(w, http.StatusOK, chirpValidateResp{CleanedBody: cleaned})
+	chirp, err := cfg.Db.CreateChirp(r.Context(), database.CreateChirpParams{
+		ID:     uuid.New(),
+		Body:   cleaned,
+		UserID: params.User,
+	})
+
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "An error occured processing your chirp")
+		return
+	}
+
+	writeJSON(w, http.StatusCreated, chirpsResp{
+		Id:        chirp.ID,
+		CreatedAt: chirp.CreatedAt,
+		UpdatedAt: chirp.UpdatedAt,
+		Body:      chirp.Body,
+		UserID:    chirp.UserID,
+	})
 }
 
 func ReplaceProfanity(text string) string {

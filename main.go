@@ -38,7 +38,9 @@ func main() {
 
 	mu.HandleFunc("GET /admin/metrics", apiCfg.endpointMetrics)
 	mu.HandleFunc("POST /admin/reset", apiCfg.endpointReset)
-	mu.HandleFunc("POST /api/validate_chirp", apiCfg.endpointValidateChirp)
+	mu.HandleFunc("POST /api/chirps", apiCfg.endpointCreateChirp)
+	mu.HandleFunc("GET /api/chirps", apiCfg.endpointGetChirps)
+	mu.HandleFunc("GET /api/chirps/{chirpID}", apiCfg.endpointGetChirp)
 	mu.HandleFunc("POST /api/users", apiCfg.endpointCreateUser)
 
 	server := http.Server{
