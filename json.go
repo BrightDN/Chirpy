@@ -24,8 +24,8 @@ type params struct {
 }
 
 type chirpValidateResp struct {
-	Cleaned_Body string `json:"cleaned_body,omitempty"`
-	Valid        bool   `json:"valid,omitempty"`
+	CleanedBody string `json:"cleaned_body,omitempty"`
+	Valid       bool   `json:"valid,omitempty"`
 }
 
 type createUserResp struct {

@@ -14,6 +14,7 @@ func (cfg *apiConfig) endpointCreateUser(w http.ResponseWriter, r *http.Request)
 		writeError(w, http.StatusBadRequest, "invalid JSON")
 		return
 	}
+
 	if p.Email == "" {
 		writeError(w, http.StatusBadRequest, "email is required")
 		return

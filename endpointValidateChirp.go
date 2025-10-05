@@ -12,30 +12,18 @@ func (cfg *apiConfig) endpointValidateChirp(w http.ResponseWriter, r *http.Reque
 	var params params
 
 	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		resp := apiError{Error: "Something went wrong"}
-		data, _ := json.Marshal(resp)
-		w.WriteHeader(400)
-		w.Write(data)
+		writeError(w, http.StatusBadRequest, "invalid JSON")
 		return
 	}
 
 	if len(params.Body) > 140 {
-		w.Header().Set("Content-Type", "application/json")
-		resp := apiError{Error: "Chirp is too long"}
-		data, _ := json.Marshal(resp)
-		w.WriteHeader(400)
-		w.Write(data)
+		writeError(w, http.StatusBadRequest, "Chirp is too long")
 		return
 	}
 
 	cleaned := ReplaceProfanity(params.Body)
 
-	w.Header().Set("Content-Type", "application/json")
-	resp := chirpValidateResp{Cleaned_Body: cleaned}
-	data, _ := json.Marshal(resp)
-	w.WriteHeader(200)
-	w.Write(data)
+	writeJSON(w, http.StatusOK, chirpValidateResp{CleanedBody: cleaned})
 }
 
 func ReplaceProfanity(text string) string {
@@ -44,6 +32,7 @@ func ReplaceProfanity(text string) string {
 		"sharbert",
 		"fornax",
 	}
+
 	fields := strings.Fields(text)
 
 	for i := range fields {
@@ -51,5 +40,6 @@ func ReplaceProfanity(text string) string {
 			fields[i] = "****"
 		}
 	}
+
 	return strings.Join(fields, " ")
 }
