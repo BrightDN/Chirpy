@@ -1,4 +1,12 @@
 # http
-### get metrics
+### metrics
 GET http://localhost:8080/admin/metrics
-Content-Type: application/json
+
+> {%
+client.test("returns 200 JSON", function() {
+  client.assert(response.status === 200);
+  client.assert(response.contentType.includes("application/json"));
+  const data = JSON.parse(response.body);
+  client.assert(typeof data.hits === "number");
+});
+%}

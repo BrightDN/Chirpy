@@ -1,4 +1,10 @@
 # http
 ### reset
 POST http://localhost:8080/admin/reset
-Content-Type: application/json
+
+> {%
+client.test("returns 204", function() {
+  client.assert(response.status === 204, "expected 204");
+  client.assert(!response.body || response.body === "", "no body for 204");
+});
+%}
