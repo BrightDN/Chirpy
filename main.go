@@ -42,6 +42,7 @@ func main() {
 	mu.HandleFunc("GET /api/chirps", apiCfg.endpointGetChirps)
 	mu.HandleFunc("GET /api/chirps/{chirpID}", apiCfg.endpointGetChirp)
 	mu.HandleFunc("POST /api/users", apiCfg.endpointCreateUser)
+	mu.HandleFunc("POST /api/login", apiCfg.endpointLogin)
 
 	server := http.Server{
 		Addr:    ":" + port,

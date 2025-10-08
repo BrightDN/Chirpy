@@ -19,9 +19,10 @@ func writeError(w http.ResponseWriter, status int, msg string) {
 }
 
 type params struct {
-	Body  string    `json:"body,omitempty"`
-	Email string    `json:"email,omitempty"`
-	User  uuid.UUID `json:"user_id"`
+	Body     string    `json:"body,omitempty"`
+	Email    string    `json:"email,omitempty"`
+	Password string    `json:"password,omitempty"`
+	User     uuid.UUID `json:"user_id"`
 }
 
 type chirpsResp struct {
@@ -32,7 +33,7 @@ type chirpsResp struct {
 	UserID    uuid.UUID `json:"user_id"`
 }
 
-type createUserResp struct {
+type userResp struct {
 	Id        uuid.UUID `json:"id,omitempty"`
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
