@@ -16,7 +16,7 @@ func main() {
 	dbURL := os.Getenv("DB_URL")
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
-		log.Fatalf("Something went wrong: %v", err)
+		log.Fatalf("Something went wrong loading the postgres db: %v", err)
 	}
 
 	dbQueries := database.New(db)
@@ -27,6 +27,7 @@ func main() {
 	apiCfg := apiConfig{
 		Db:       dbQueries,
 		Platform: os.Getenv("PLATFORM"),
+		Secret:   os.Getenv("JWTSECRET"),
 	}
 
 	mu := http.NewServeMux()

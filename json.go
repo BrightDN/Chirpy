@@ -19,10 +19,10 @@ func writeError(w http.ResponseWriter, status int, msg string) {
 }
 
 type params struct {
-	Body     string    `json:"body,omitempty"`
-	Email    string    `json:"email,omitempty"`
-	Password string    `json:"password,omitempty"`
-	User     uuid.UUID `json:"user_id"`
+	ExpiresIn *int   `json:"expires_in_seconds"`
+	Body      string `json:"body,omitempty"`
+	Email     string `json:"email,omitempty"`
+	Password  string `json:"password,omitempty"`
 }
 
 type chirpsResp struct {
@@ -38,6 +38,7 @@ type userResp struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	Email     string    `json:"email,omitempty"`
+	Token     string    `json:"token,omitempty"`
 }
 
 type apiError struct {

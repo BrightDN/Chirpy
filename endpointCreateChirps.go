@@ -6,6 +6,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/BrightDN/Chirpy/internal/auth"
 	"github.com/BrightDN/Chirpy/internal/database"
 	"github.com/google/uuid"
 )
@@ -15,6 +16,19 @@ func (cfg *apiConfig) endpointCreateChirp(w http.ResponseWriter, r *http.Request
 
 	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
 		writeError(w, http.StatusBadRequest, "invalid JSON")
+		return
+	}
+
+	bt, err := auth.GetBearerToken(r.Header)
+
+	if err != nil {
+		writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	user, err := auth.ValidateJWT(bt, cfg.Secret)
+
+	if err != nil {
+		writeError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
 
@@ -28,7 +42,7 @@ func (cfg *apiConfig) endpointCreateChirp(w http.ResponseWriter, r *http.Request
 	chirp, err := cfg.Db.CreateChirp(r.Context(), database.CreateChirpParams{
 		ID:     uuid.New(),
 		Body:   cleaned,
-		UserID: params.User,
+		UserID: user,
 	})
 
 	if err != nil {
