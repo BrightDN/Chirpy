@@ -45,6 +45,7 @@ func main() {
 
 	mu.HandleFunc("POST /api/chirps", apiCfg.endpointCreateChirp)
 	mu.HandleFunc("POST /api/users", apiCfg.endpointCreateUser)
+	mu.HandleFunc("PUT /api/users", apiCfg.endpointUpdateUserData)
 	mu.HandleFunc("POST /api/login", apiCfg.endpointLogin)
 	mu.HandleFunc("POST /api/refresh", apiCfg.endpointRefreshToken)
 	mu.HandleFunc("POST /api/revoke", apiCfg.endpointRevokeToken)
