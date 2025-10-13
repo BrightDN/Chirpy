@@ -11,6 +11,35 @@ import (
 	"github.com/google/uuid"
 )
 
+const alterUserData = `-- name: AlterUserData :one
+UPDATE users
+SET
+email = $1,
+hashed_password = $2,
+updated_at = CURRENT_TIMESTAMP
+WHERE id = $3
+RETURNING id, created_at, updated_at, email, hashed_password
+`
+
+type AlterUserDataParams struct {
+	Email          string
+	HashedPassword string
+	ID             uuid.UUID
+}
+
+func (q *Queries) AlterUserData(ctx context.Context, arg AlterUserDataParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, alterUserData, arg.Email, arg.HashedPassword, arg.ID)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Email,
+		&i.HashedPassword,
+	)
+	return i, err
+}
+
 const createUser = `-- name: CreateUser :one
 INSERT INTO users(id, created_at, updated_at, email, hashed_password)
 VALUES(

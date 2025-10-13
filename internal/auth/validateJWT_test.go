@@ -2,14 +2,13 @@ package auth
 
 import (
 	"testing"
-	"time"
 
 	"github.com/google/uuid"
 )
 
 func TestValidateJWT_Valid(t *testing.T) {
 	userID := uuid.New()
-	tok, err := MakeJWT(userID, "secret", time.Hour)
+	tok, err := MakeJWT(userID, "secret")
 	if err != nil {
 		t.Fatalf("make jwt: %v", err)
 	}

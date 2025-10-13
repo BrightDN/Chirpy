@@ -25,6 +25,7 @@ func (cfg *apiConfig) endpointCreateChirp(w http.ResponseWriter, r *http.Request
 		writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
 	user, err := auth.ValidateJWT(bt, cfg.Secret)
 
 	if err != nil {

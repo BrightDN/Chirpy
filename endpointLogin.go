@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"github.com/BrightDN/Chirpy/internal/auth"
+	"github.com/BrightDN/Chirpy/internal/database"
 )
 
 func (cfg *apiConfig) endpointLogin(w http.ResponseWriter, r *http.Request) {
@@ -31,29 +31,30 @@ func (cfg *apiConfig) endpointLogin(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusUnauthorized, "The given email or password does not match")
 	}
 
-	tok, err := auth.MakeJWT(user.ID, cfg.Secret, getExpiration(p))
+	tok, err := auth.MakeJWT(user.ID, cfg.Secret)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "Something went wrong")
 	}
 
-	writeJSON(w, http.StatusOK, userResp{
-		Id:        user.ID,
-		Email:     user.Email,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-		Token:     tok,
+	rt, err := auth.MakeRefreshToken()
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "something went wrong")
+	}
+
+	refreshTok, err := cfg.Db.CreateRefreshToken(r.Context(), database.CreateRefreshTokenParams{
+		Token:  rt,
+		UserID: user.ID,
 	})
-}
-
-func getExpiration(req params) time.Duration {
-	const max = time.Hour
-	if req.ExpiresIn == nil || *req.ExpiresIn <= 0 {
-		return max
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
 	}
 
-	d := time.Duration(*req.ExpiresIn) * time.Second
-	if d > max {
-		return max
-	}
-	return d
+	writeJSON(w, http.StatusOK, userResp{
+		Id:           user.ID,
+		Email:        user.Email,
+		CreatedAt:    user.CreatedAt,
+		UpdatedAt:    user.UpdatedAt,
+		AuthToken:    tok,
+		RefreshToken: refreshTok.Token,
+	})
 }

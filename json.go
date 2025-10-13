@@ -19,10 +19,9 @@ func writeError(w http.ResponseWriter, status int, msg string) {
 }
 
 type params struct {
-	ExpiresIn *int   `json:"expires_in_seconds"`
-	Body      string `json:"body,omitempty"`
-	Email     string `json:"email,omitempty"`
-	Password  string `json:"password,omitempty"`
+	Body     string `json:"body,omitempty"`
+	Email    string `json:"email,omitempty"`
+	Password string `json:"password,omitempty"`
 }
 
 type chirpsResp struct {
@@ -34,11 +33,16 @@ type chirpsResp struct {
 }
 
 type userResp struct {
-	Id        uuid.UUID `json:"id,omitempty"`
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	Email     string    `json:"email,omitempty"`
-	Token     string    `json:"token,omitempty"`
+	Id           uuid.UUID `json:"id"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+	Email        string    `json:"email"`
+	AuthToken    string    `json:"token"`
+	RefreshToken string    `json:"refresh_token"`
+}
+
+type tokenResp struct {
+	Token string `json:"token"`
 }
 
 type apiError struct {
