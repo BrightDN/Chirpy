@@ -9,6 +9,12 @@ import (
 )
 
 func writeJSON(w http.ResponseWriter, status int, v any) {
+	switch status {
+	case http.StatusNoContent, http.StatusNotModified:
+		w.WriteHeader(status)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(v)
