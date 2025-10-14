@@ -42,6 +42,7 @@ func main() {
 
 	mu.HandleFunc("GET /api/chirps", apiCfg.endpointGetChirps)
 	mu.HandleFunc("GET /api/chirps/{chirpID}", apiCfg.endpointGetChirp)
+	mu.HandleFunc("DELETE /api/chirps/{chirpID}", apiCfg.endpointDeleteChirp)
 
 	mu.HandleFunc("POST /api/chirps", apiCfg.endpointCreateChirp)
 	mu.HandleFunc("POST /api/users", apiCfg.endpointCreateUser)
