@@ -8,6 +8,18 @@ import (
 )
 
 func (cfg *apiConfig) endpointDeleteChirp(w http.ResponseWriter, r *http.Request) {
+	authTok, err := auth.GetBearerToken(r.Header)
+	if err != nil {
+		writeError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	userID, err := auth.ValidateJWT(authTok, cfg.Secret)
+	if err != nil {
+		writeError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+
 	chirpID := r.PathValue("chirpID")
 	if chirpID == "" {
 		writeError(w, http.StatusBadRequest, "Include a chirpID")
@@ -23,18 +35,6 @@ func (cfg *apiConfig) endpointDeleteChirp(w http.ResponseWriter, r *http.Request
 	chirp, err := cfg.Db.GetChirp(r.Context(), chirpUUID)
 	if err != nil {
 		writeError(w, http.StatusNotFound, "No chirp with this ID exists")
-		return
-	}
-
-	authTok, err := auth.GetBearerToken(r.Header)
-	if err != nil {
-		writeError(w, http.StatusUnauthorized, err.Error())
-		return
-	}
-
-	userID, err := auth.ValidateJWT(authTok, cfg.Secret)
-	if err != nil {
-		writeError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
 
