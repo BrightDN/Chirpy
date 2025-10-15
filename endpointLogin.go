@@ -29,16 +29,19 @@ func (cfg *apiConfig) endpointLogin(w http.ResponseWriter, r *http.Request) {
 
 	if !isSame {
 		writeError(w, http.StatusUnauthorized, "The given email or password does not match")
+		return
 	}
 
 	tok, err := auth.MakeJWT(user.ID, cfg.Secret)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "Something went wrong")
+		return
 	}
 
 	rt, err := auth.MakeRefreshToken()
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "something went wrong")
+		return
 	}
 
 	refreshTok, err := cfg.Db.CreateRefreshToken(r.Context(), database.CreateRefreshTokenParams{
@@ -47,6 +50,7 @@ func (cfg *apiConfig) endpointLogin(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	writeJSON(w, http.StatusOK, userResp{
@@ -56,5 +60,6 @@ func (cfg *apiConfig) endpointLogin(w http.ResponseWriter, r *http.Request) {
 		UpdatedAt:    user.UpdatedAt,
 		AuthToken:    tok,
 		RefreshToken: refreshTok.Token,
+		IsChirpyRed:  user.IsChirpyRed,
 	})
 }

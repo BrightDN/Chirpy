@@ -50,6 +50,7 @@ func main() {
 	mu.HandleFunc("POST /api/login", apiCfg.endpointLogin)
 	mu.HandleFunc("POST /api/refresh", apiCfg.endpointRefreshToken)
 	mu.HandleFunc("POST /api/revoke", apiCfg.endpointRevokeToken)
+	mu.HandleFunc("POST /api/polka/webhooks", apiCfg.endpointUpgradeWebhook)
 
 	server := http.Server{
 		Addr:    ":" + port,
