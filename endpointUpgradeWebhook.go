@@ -18,6 +18,7 @@ func (cfg *apiConfig) endpointUpgradeWebhook(w http.ResponseWriter, r *http.Requ
 		writeError(w, http.StatusUnauthorized, "Unauthorized request")
 		return
 	}
+
 	var whr upgradeHookResp
 	if err := json.NewDecoder(r.Body).Decode(&whr); err != nil {
 		writeError(w, http.StatusBadRequest, "invalid JSON")

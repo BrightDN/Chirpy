@@ -2,16 +2,40 @@ package main
 
 import (
 	"net/http"
+	"sort"
 
+	"github.com/BrightDN/Chirpy/internal/database"
 	"github.com/google/uuid"
 )
 
 func (cfg *apiConfig) endpointGetChirps(w http.ResponseWriter, r *http.Request) {
+	sid := r.URL.Query().Get("author_id")
+	ssort := r.URL.Query().Get("sort")
 
-	chirps, err := cfg.Db.GetAllChirps(r.Context())
-	if err != nil {
-		writeError(w, http.StatusInternalServerError, "An error occured handling your request")
-		return
+	var chirps []database.Chirp
+	var err error
+	if sid == "" {
+		chirps, err = cfg.Db.GetAllChirps(r.Context())
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, "An error occured handling your request")
+			return
+		}
+	} else {
+		s, err := uuid.Parse(sid)
+		if err != nil {
+			writeError(w, http.StatusBadRequest, "Invalid ID format")
+			return
+		}
+		chirps, err = cfg.Db.GetAllChirpsFromAuthor(r.Context(), s)
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, "An error occured handling your request")
+			return
+		}
+	}
+	if ssort == "desc" {
+		sort.Slice(chirps, func(i, j int) bool {
+			return i > j
+		})
 	}
 
 	out := make([]chirpsResp, len(chirps))
