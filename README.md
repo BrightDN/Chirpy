@@ -1,2 +1,2 @@
 # Chirpy
-Chirpy is a social network.
+Chirpy is a social network api

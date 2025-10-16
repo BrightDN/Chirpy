@@ -1,11 +1,11 @@
-package main
+package endpoints
 
 import (
 	"fmt"
 	"net/http"
 )
 
-func (cfg *apiConfig) endpointMetrics(w http.ResponseWriter, r *http.Request) {
+func (cfg *ApiConfig) EndpointMetrics(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	count := cfg.fileserverHits.Load()

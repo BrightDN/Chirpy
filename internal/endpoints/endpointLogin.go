@@ -1,4 +1,4 @@
-package main
+package endpoints
 
 import (
 	"encoding/json"
@@ -6,41 +6,42 @@ import (
 
 	"github.com/BrightDN/Chirpy/internal/auth"
 	"github.com/BrightDN/Chirpy/internal/database"
+	"github.com/BrightDN/Chirpy/internal/jsonConfig"
 )
 
-func (cfg *apiConfig) endpointLogin(w http.ResponseWriter, r *http.Request) {
-	var p params
+func (cfg *ApiConfig) EndpointLogin(w http.ResponseWriter, r *http.Request) {
+	var p jsonConfig.Params
 	if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid JSON")
+		jsonConfig.WriteError(w, http.StatusBadRequest, "invalid JSON")
 		return
 	}
 
 	user, err := cfg.Db.GetUser(r.Context(), p.Email)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "something went wrong processing the request, please try again")
+		jsonConfig.WriteError(w, http.StatusInternalServerError, "something went wrong processing the request, please try again")
 		return
 	}
 
 	isSame, err := auth.ComparePasswordHash(p.Password, user.HashedPassword)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
+		jsonConfig.WriteError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	if !isSame {
-		writeError(w, http.StatusUnauthorized, "The given email or password does not match")
+		jsonConfig.WriteError(w, http.StatusUnauthorized, "The given email or password does not match")
 		return
 	}
 
 	tok, err := auth.MakeJWT(user.ID, cfg.Secret)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "Something went wrong")
+		jsonConfig.WriteError(w, http.StatusBadRequest, "Something went wrong")
 		return
 	}
 
 	rt, err := auth.MakeRefreshToken()
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "something went wrong")
+		jsonConfig.WriteError(w, http.StatusBadRequest, "something went wrong")
 		return
 	}
 
@@ -49,11 +50,11 @@ func (cfg *apiConfig) endpointLogin(w http.ResponseWriter, r *http.Request) {
 		UserID: user.ID,
 	})
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
+		jsonConfig.WriteError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	writeJSON(w, http.StatusOK, userResp{
+	jsonConfig.WriteJSON(w, http.StatusOK, jsonConfig.UserResp{
 		Id:           user.ID,
 		Email:        user.Email,
 		CreatedAt:    user.CreatedAt,

@@ -1,4 +1,4 @@
-package main
+package endpoints
 
 import (
 	"sync/atomic"
@@ -6,7 +6,7 @@ import (
 	"github.com/BrightDN/Chirpy/internal/database"
 )
 
-type apiConfig struct {
+type ApiConfig struct {
 	fileserverHits atomic.Int32
 	Db             *database.Queries
 	Platform       string

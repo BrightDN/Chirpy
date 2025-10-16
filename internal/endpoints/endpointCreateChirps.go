@@ -1,4 +1,4 @@
-package main
+package endpoints
 
 import (
 	"encoding/json"
@@ -8,33 +8,34 @@ import (
 
 	"github.com/BrightDN/Chirpy/internal/auth"
 	"github.com/BrightDN/Chirpy/internal/database"
+	"github.com/BrightDN/Chirpy/internal/jsonConfig"
 	"github.com/google/uuid"
 )
 
-func (cfg *apiConfig) endpointCreateChirp(w http.ResponseWriter, r *http.Request) {
-	var params params
+func (cfg *ApiConfig) EndpointCreateChirp(w http.ResponseWriter, r *http.Request) {
+	var params jsonConfig.Params
 
 	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid JSON")
+		jsonConfig.WriteError(w, http.StatusBadRequest, "invalid JSON")
 		return
 	}
 
 	bt, err := auth.GetBearerToken(r.Header)
 
 	if err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
+		jsonConfig.WriteError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	user, err := auth.ValidateJWT(bt, cfg.Secret)
 
 	if err != nil {
-		writeError(w, http.StatusUnauthorized, err.Error())
+		jsonConfig.WriteError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
 
 	if len(params.Body) > 140 {
-		writeError(w, http.StatusBadRequest, "Chirp is too long")
+		jsonConfig.WriteError(w, http.StatusBadRequest, "Chirp is too long")
 		return
 	}
 
@@ -47,11 +48,11 @@ func (cfg *apiConfig) endpointCreateChirp(w http.ResponseWriter, r *http.Request
 	})
 
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "An error occured processing your chirp")
+		jsonConfig.WriteError(w, http.StatusInternalServerError, "An error occured processing your chirp")
 		return
 	}
 
-	writeJSON(w, http.StatusCreated, chirpsResp{
+	jsonConfig.WriteJSON(w, http.StatusCreated, jsonConfig.ChirpsResp{
 		Id:        chirp.ID,
 		CreatedAt: chirp.CreatedAt,
 		UpdatedAt: chirp.UpdatedAt,

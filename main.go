@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/BrightDN/Chirpy/internal/database"
+	"github.com/BrightDN/Chirpy/internal/endpoints"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
@@ -24,7 +25,7 @@ func main() {
 	const filepathRoot = "."
 	const port = "8080"
 
-	apiCfg := apiConfig{
+	apiCfg := endpoints.ApiConfig{
 		Db:       dbQueries,
 		Platform: os.Getenv("PLATFORM"),
 		Secret:   os.Getenv("JWTSECRET"),
@@ -35,23 +36,23 @@ func main() {
 	fileServer := http.FileServer(http.Dir(filepathRoot))
 	handler := http.StripPrefix("/app", fileServer)
 
-	mu.Handle("/app/", apiCfg.middlewareMetricsInc(handler))
-	mu.HandleFunc("GET /admin/healthz", endpointReadiness)
+	mu.Handle("/app/", apiCfg.MiddlewareMetricsInc(handler))
+	mu.HandleFunc("GET /admin/healthz", endpoints.EndpointReadiness)
 
-	mu.HandleFunc("GET /admin/metrics", apiCfg.endpointMetrics)
-	mu.HandleFunc("POST /admin/reset", apiCfg.endpointReset)
+	mu.HandleFunc("GET /admin/metrics", apiCfg.EndpointMetrics)
+	mu.HandleFunc("POST /admin/reset", apiCfg.EndpointReset)
 
-	mu.HandleFunc("GET /api/chirps", apiCfg.endpointGetChirps)
-	mu.HandleFunc("GET /api/chirps/{chirpID}", apiCfg.endpointGetChirp)
-	mu.HandleFunc("DELETE /api/chirps/{chirpID}", apiCfg.endpointDeleteChirp)
+	mu.HandleFunc("GET /api/chirps", apiCfg.EndpointGetChirps)
+	mu.HandleFunc("GET /api/chirps/{chirpID}", apiCfg.EndpointGetChirp)
+	mu.HandleFunc("DELETE /api/chirps/{chirpID}", apiCfg.EndpointDeleteChirp)
 
-	mu.HandleFunc("POST /api/chirps", apiCfg.endpointCreateChirp)
-	mu.HandleFunc("POST /api/users", apiCfg.endpointCreateUser)
-	mu.HandleFunc("PUT /api/users", apiCfg.endpointUpdateUserData)
-	mu.HandleFunc("POST /api/login", apiCfg.endpointLogin)
-	mu.HandleFunc("POST /api/refresh", apiCfg.endpointRefreshToken)
-	mu.HandleFunc("POST /api/revoke", apiCfg.endpointRevokeToken)
-	mu.HandleFunc("POST /api/polka/webhooks", apiCfg.endpointUpgradeWebhook)
+	mu.HandleFunc("POST /api/chirps", apiCfg.EndpointCreateChirp)
+	mu.HandleFunc("POST /api/users", apiCfg.EndpointCreateUser)
+	mu.HandleFunc("PUT /api/users", apiCfg.EndpointUpdateUserData)
+	mu.HandleFunc("POST /api/login", apiCfg.EndpointLogin)
+	mu.HandleFunc("POST /api/refresh", apiCfg.EndpointRefreshToken)
+	mu.HandleFunc("POST /api/revoke", apiCfg.EndpointRevokeToken)
+	mu.HandleFunc("POST /api/polka/webhooks", apiCfg.EndpointUpgradeWebhook)
 
 	server := http.Server{
 		Addr:    ":" + port,

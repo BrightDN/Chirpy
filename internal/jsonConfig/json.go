@@ -1,4 +1,4 @@
-package main
+package jsonConfig
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func writeJSON(w http.ResponseWriter, status int, v any) {
+func WriteJSON(w http.ResponseWriter, status int, v any) {
 	switch status {
 	case http.StatusNoContent, http.StatusNotModified:
 		w.WriteHeader(status)
@@ -20,17 +20,17 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 	_ = json.NewEncoder(w).Encode(v)
 }
 
-func writeError(w http.ResponseWriter, status int, msg string) {
-	writeJSON(w, status, apiError{Error: msg})
+func WriteError(w http.ResponseWriter, status int, msg string) {
+	WriteJSON(w, status, apiError{Error: msg})
 }
 
-type params struct {
+type Params struct {
 	Body     string `json:"body,omitempty"`
 	Email    string `json:"email,omitempty"`
 	Password string `json:"password,omitempty"`
 }
 
-type chirpsResp struct {
+type ChirpsResp struct {
 	Id        uuid.UUID `json:"id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -38,7 +38,7 @@ type chirpsResp struct {
 	UserID    uuid.UUID `json:"user_id"`
 }
 
-type userResp struct {
+type UserResp struct {
 	Id           uuid.UUID `json:"id"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
@@ -48,14 +48,14 @@ type userResp struct {
 	IsChirpyRed  bool      `json:"is_chirpy_red"`
 }
 
-type upgradeHookResp struct {
+type UpgradeHookResp struct {
 	Event string `json:"event"`
 	Data  struct {
 		UserId uuid.UUID `json:"user_id"`
 	} `json:"data"`
 }
 
-type tokenResp struct {
+type TokenResp struct {
 	Token string `json:"token"`
 }
 
